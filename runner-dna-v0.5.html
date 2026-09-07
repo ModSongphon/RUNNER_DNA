@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Runner DNA — Discover what drives you</title>
+  <style>
+    :root{--bg:#f6f7f9;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#111827;--soft:#f3f4f6}
+    *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:760px;margin:auto;padding:24px 16px 64px}.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.04)}
+    .hero{text-align:center;padding:52px 24px}.logo{font-size:48px}.eyebrow{font-weight:800;letter-spacing:.08em;font-size:13px}.hero h1{font-size:44px;line-height:1;margin:12px 0}.hero p{color:var(--muted);font-size:18px;line-height:1.6}
+    button{font:inherit}.primary{border:0;background:var(--accent);color:white;border-radius:999px;padding:14px 22px;font-weight:800;cursor:pointer}.secondary{border:1px solid var(--line);background:white;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer}
+    .hidden{display:none}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.bar{height:100%;background:#111827;width:0;transition:.25s}
+    .qnum{color:var(--muted);font-size:14px}.question{font-size:26px;line-height:1.45;font-weight:800;margin:28px 0}
+    .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.score{min-height:68px;border:1px solid var(--line);border-radius:16px;background:white;font-size:22px;font-weight:900;cursor:pointer}.score:hover,.score.active{background:#111827;color:white;border-color:#111827}
+    .labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:10px}.nav{display:flex;justify-content:space-between;margin-top:30px}
+    .result{text-align:center}.result h2{font-size:34px;margin-bottom:4px}.archetype{font-size:28px;font-weight:900;margin:8px 0}.combo{color:var(--muted);font-weight:700}.desc{max-width:570px;margin:14px auto 26px;color:#4b5563;line-height:1.7}
+    canvas{width:100%;max-width:560px;height:auto;margin:auto;display:block}.scores{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:24px 0;text-align:left}.pill{background:var(--soft);border-radius:15px;padding:13px 15px;display:flex;justify-content:space-between;gap:12px}.pill b:last-child{font-variant-numeric:tabular-nums}
+    .note{font-size:12px;color:var(--muted);margin-top:22px}.footer{text-align:center;color:#9ca3af;font-size:12px;margin-top:18px}
+    @media(max-width:560px){.hero{padding:38px 18px}.hero h1{font-size:38px}.card{padding:20px;border-radius:20px}.question{font-size:22px}.scale{gap:7px}.score{min-height:60px}.scores{grid-template-columns:1fr}}
+  </style>
+<style>
+body{background:radial-gradient(circle at 15% 10%,#16323a 0,transparent 30%),radial-gradient(circle at 90% 20%,#341c38 0,transparent 30%),#090b10!important;color:#f8fafc!important;overflow-x:hidden}
+.card{background:rgba(17,20,28,.88)!important;color:#f8fafc!important;border-color:rgba(255,255,255,.1)!important;backdrop-filter:blur(16px);box-shadow:0 25px 70px rgba(0,0,0,.35)!important;animation:enter .55s ease}
+.hero h1{background:linear-gradient(90deg,#fff,#50e7ff,#c7ff32,#fff);background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:grad 5s linear infinite;font-size:clamp(42px,8vw,68px)!important}
+.eyebrow{color:#c7ff32!important}.hero p,.qnum,.labels,.note,.footer,.desc{color:#a8b0bf!important}
+.primary{background:linear-gradient(90deg,#c7ff32,#8cff65)!important;color:#081006!important;box-shadow:0 12px 30px rgba(199,255,50,.18);transition:.2s}.primary:hover{transform:translateY(-3px) scale(1.02)}
+.secondary{background:rgba(255,255,255,.06)!important;color:white!important;border-color:rgba(255,255,255,.12)!important}
+.progress{background:rgba(255,255,255,.08)!important}.bar{background:linear-gradient(90deg,#50e7ff,#c7ff32)!important;box-shadow:0 0 20px rgba(80,231,255,.35)}
+.question{animation:q .35s ease;font-size:clamp(24px,5vw,34px)!important}.score{background:rgba(255,255,255,.05)!important;color:white!important;border-color:rgba(255,255,255,.1)!important;transition:.18s}.score:hover{transform:translateY(-5px);border-color:#50e7ff!important}.score.active{background:linear-gradient(145deg,#50e7ff,#c7ff32)!important;color:#071013!important;transform:translateY(-5px) scale(1.05);box-shadow:0 14px 35px rgba(80,231,255,.18)}
+#breakAnimal{font-size:92px!important;animation:run 1.6s ease-in-out infinite}.archetype{background:linear-gradient(90deg,#50e7ff,#c7ff32,#ff69c8);-webkit-background-clip:text;background-clip:text;color:transparent!important}.combo,.pill b:last-child{color:#c7ff32!important}.pill{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)}
+.logo{animation:bob 2.3s ease-in-out infinite;filter:drop-shadow(0 10px 20px rgba(199,255,50,.16))}
+@keyframes enter{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}@keyframes q{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}@keyframes bob{50%{transform:translateY(-10px) rotate(3deg)}}@keyframes run{0%,100%{transform:translateX(-12px) rotate(-4deg)}50%{transform:translateX(12px) translateY(-10px) rotate(5deg)}}@keyframes grad{to{background-position:200% center}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>
+/* v0.5 — richer free-result reveal */
+#result .result-animal{font-size:108px;display:inline-block;animation:runner 1.8s ease-in-out infinite;filter:drop-shadow(0 16px 28px rgba(255,105,200,.22))}
+#result .result-name{font-size:clamp(46px,10vw,78px);font-weight:1000;line-height:.9;margin:8px 0;background:linear-gradient(90deg,#fff,var(--pink),var(--cyan));color:transparent;background-clip:text;-webkit-background-clip:text}
+#result .result-hook{font-size:clamp(21px,4vw,28px);font-weight:950;line-height:1.45;max-width:650px;margin:24px auto}
+#result .vibe{margin:28px auto;padding:22px;border-radius:22px;background:linear-gradient(120deg,rgba(255,105,200,.11),rgba(80,231,255,.08));border:1px solid var(--line);max-width:650px}
+#result .vibe b{color:var(--lime)}
+#result .lock{margin:30px auto 0;padding:24px;border:1px solid rgba(199,255,50,.25);border-radius:23px;background:rgba(199,255,50,.055);max-width:650px}
+#result .lock p{color:var(--muted);line-height:1.65}
+#result .family{margin-top:28px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted)}
+#result .family-animals{font-size:25px;line-height:1.8;letter-spacing:3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="landing" class="card hero">
+    <div class="logo">🧬</div>
+    <div class="eyebrow">RUNNER DNA</div>
+    <h1>RUN DIFFERENT.</h1>
+    <p>นักวิ่งทุกคนมีเหตุผลที่ออกไปวิ่งไม่เหมือนกัน<br><b style="color:white">แล้วอะไรคือสิ่งที่ขับเคลื่อนคุณ?</b><br><span style="font-size:28px">🐆 🐢 🐈 🦎 🐕</span></p>
+    <button class="primary" onclick="startSurvey()">เริ่ม Runner DNA</button><button id="resumeBtn" class="secondary hidden" style="margin-left:8px" onclick="resumeSurvey()">ทำต่อจากเดิม →</button>
+    <div class="note">28 คำถาม · ใช้เวลาประมาณ 3–5 นาที · ไม่ต้องสมัครสมาชิก</div>
+  </section>
+
+  <section id="survey" class="card hidden">
+    <div class="top"><div class="eyebrow">RUNNER DNA</div><div id="counter" class="qnum"></div></div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div id="question" class="question"></div>
+    <div class="scale" id="scale"></div>
+    <div class="labels"><span>ไม่ใช่ฉันเลย</span><span>นี่แหละฉัน</span></div>
+    <div class="nav"><button class="secondary" onclick="prev()">← ย้อนกลับ</button><button id="nextBtn" class="primary" onclick="next()">ถัดไป →</button></div>
+  </section>
+
+  <section id="breakScreen" class="card hero hidden"><div id="breakAnimal" class="logo">🐕</div><div id="breakPart" class="eyebrow"></div><h2 id="breakQuote" style="font-size:30px;line-height:1.45"></h2><p id="breakMsg"></p><button class="primary" onclick="continueSurvey()">วิ่งต่อ →</button></section>
+
+  <section id="result" class="card result hidden">
+    <div class="eyebrow">YOUR RUNNER DNA · FREE RESULT</div>
+    <div id="resultAnimal" class="result-animal">🐾</div>
+    <div id="resultAnimalName" class="result-name">RUNNER</div>
+    <div id="arch" class="archetype">Your Archetype</div>
+    <div id="combo" class="combo"></div>
+    <div id="resultHook" class="result-hook"></div>
+    <h2 id="resultTitle"></h2>
+    <p id="desc" class="desc"></p>
+    <div class="vibe"><b>YOUR RUNNER VIBE</b><div id="resultVibe" style="font-size:19px;margin-top:10px"></div></div>
+    <div id="resultQuote" style="font-size:27px;font-weight:950;margin:28px 0"></div>
+    <canvas id="radar" width="600" height="600"></canvas>
+    <div id="scores" class="scores"></div>
+    <div class="lock">
+      <h3>🔒 There's more in your DNA.</h3>
+      <p>ปลดล็อก Full Runner DNA เพื่อดู <b style="color:white">จุดแข็ง · สิ่งที่ต้องระวัง · DNA อันดับ 3 · Runner ที่เข้ากับคุณ · สไตล์การวิ่งที่เหมาะกับคุณ</b></p>
+      <button class="primary" onclick="alert('Profile unlock — coming in the next MVP step')">Save My Runner DNA & Unlock →</button>
+    </div>
+    <div class="family">
+      <div class="eyebrow">MEET THE RUNNER DNA FAMILY</div>
+      <p>21 Animals · 21 Runner Personalities</p>
+      <div class="family-animals">🐕 🐜 🦌 🐘 🐢 🦥 🐬 🐺 🐝 🐕 🦩<br>🐎 🦉 🐊 🦅 🐆 🐅 🐈 🦎 🦎 🦚</div>
+      <p><b style="color:white">Which one are your friends?</b></p>
+    </div>
+    <button class="secondary" onclick="restart()" style="margin-top:18px">ทำแบบทดสอบอีกครั้ง</button>
+  </section>
+  <div class="footer">Runner DNA Web MVP v0.5</div>
+</div>
+
+<script>
+const questions = [
+["Health","วิ่งเร็วหรือช้าไม่สำคัญ ขอแค่ได้ออกมาวิ่งและรู้สึกว่าตัวเองแข็งแรงขึ้นก็พอ"],
+["Goal","พอรู้ว่ามีงานวิ่งที่ลงไว้รออยู่ ฉันจะอยากออกไปวิ่งมากขึ้น"],
+["Data","หลังวิ่งเสร็จ ฉันชอบเปิดดูว่าตัวเองวิ่งไปเท่าไหร่ เร็วแค่ไหน หรือร่างกายเป็นยังไงบ้าง"],
+["Social","วิ่งคนเดียวก็ได้ แต่ถ้ามีเพื่อนวิ่งด้วยจะสนุกกว่าเยอะ"],
+["Style","การเลือกชุดหรือรองเท้าก่อนออกไปวิ่ง เป็นส่วนหนึ่งของความสนุกสำหรับฉัน"],
+["Lifestyle","ตอนนี้การวิ่งกลายเป็นส่วนหนึ่งของชีวิตฉันไปแล้ว"],
+["Performance","ถ้าวันนี้วิ่งได้ดีกว่าเดิม ฉันจะรู้สึกดีเป็นพิเศษ"],
+["Health","วันที่เหนื่อยหรือมีเรื่องให้คิด การได้ออกไปวิ่งช่วยให้ฉันรู้สึกดีขึ้น"],
+["Goal","พอทำเป้าหมายหนึ่งสำเร็จ ฉันมักจะหาเป้าหมายใหม่ให้ตัวเองต่อ"],
+["Data","ข้อมูลจากนาฬิกาหรือแอป มีผลกับการตัดสินใจว่าวันนี้ฉันควรวิ่งแค่ไหน"],
+["Social","การได้เจอหรือรู้จักคนใหม่ ๆ จากการวิ่ง เป็นเรื่องที่ฉันชอบ"],
+["Style","ฉันชอบแต่งตัวไปวิ่งในแบบที่เป็นตัวเอง"],
+["Lifestyle","ถ้าให้อธิบายว่าฉันเป็นคนแบบไหน คำว่า “คนชอบวิ่ง” น่าจะเป็นหนึ่งในนั้น"],
+["Performance","ฉันมีความสุขเวลาทำเวลาได้ดีกว่าที่ตัวเองเคยทำ"],
+["Health","เหตุผลสำคัญที่ฉันออกมาวิ่ง คืออยากให้ตัวเองมีสุขภาพที่ดีขึ้น"],
+["Goal","ถ้ามีแผนหรือเป้าหมายชัดเจน ฉันจะอยากออกไปวิ่งมากกว่าวิ่งไปเรื่อย ๆ"],
+["Data","เวลามีข้อมูลการวิ่งให้ดู ฉันชอบเอามาเทียบกับครั้งก่อน ๆ ว่ามีอะไรเปลี่ยนไปบ้าง"],
+["Social","ฉันชอบกิจกรรมวิ่งที่ได้เจอเพื่อนหรือคนที่ชอบอะไรเหมือนกัน"],
+["Style","ฉันสนใจชุด รองเท้า หรือของใหม่ ๆ ที่เกี่ยวกับการวิ่ง"],
+["Lifestyle","ฉันเคยจัดตารางชีวิตให้เข้ากับวันที่อยากออกไปวิ่ง"],
+["Performance","เวลาไปงานวิ่ง ฉันมักอยากรู้ว่าครั้งนี้ตัวเองทำเวลาได้ดีกว่าครั้งก่อนหรือเปล่า"],
+["Health","ถ้าวันไหนรู้สึกว่าร่างกายไม่พร้อม ฉันยอมวิ่งน้อยลงหรือพักได้"],
+["Goal","พอวิ่งระยะหนึ่งได้แล้ว ฉันมักอยากลองระยะที่ไกลขึ้นกว่าเดิม"],
+["Data","ฉันชอบใช้ข้อมูลจากการวิ่งมาดูว่าตัวเองควรปรับอะไรบ้าง"],
+["Social","ถ้ามีเพื่อนชวนไปวิ่ง ฉันมีโอกาสออกไปวิ่งมากกว่าวันที่ต้องไปคนเดียว"],
+["Style","ถ้าวันไหนมีชุดวิ่งใหม่ที่ถูกใจ ฉันจะรู้สึกอยากออกไปวิ่งมากขึ้น"],
+["Lifestyle","ถ้าต้องหยุดวิ่งไปนาน ๆ ฉันจะรู้สึกเหมือนชีวิตขาดอะไรบางอย่าง"],
+["Performance","เวลามีคนวิ่งอยู่ข้างหน้า บางครั้งฉันก็อยากลองตามหรือแซงดู"]
+];
+const meta = {
+ Health:["🐢","Health","สุขภาพ"], Social:["👫","Social","เพื่อนและสังคม"], Goal:["🎯","Goal","เป้าหมาย"],
+ Performance:["🔥","Performance","พัฒนาผลงาน"], Data:["⌚","Data","ข้อมูล"], Lifestyle:["❤️","Lifestyle","ชีวิตและตัวตน"], Style:["✨","Style","สไตล์"]
+};
+const archetypes = {
+"Health|Social":"The Wellness Buddy","Goal|Health":"The Progress Seeker","Health|Performance":"The Fit Competitor","Data|Health":"The Body Hacker","Health|Lifestyle":"The Lifelong Runner","Health|Style":"The Feel-Good Runner",
+"Goal|Social":"The Team Chaser","Performance|Social":"The Club Racer","Data|Social":"The Connected Runner","Lifestyle|Social":"The Run Clubber","Social|Style":"The Trendsetter",
+"Goal|Performance":"The Racer","Data|Goal":"The Planner","Goal|Lifestyle":"The Journey Runner","Goal|Style":"The Goal Getter",
+"Data|Performance":"The Optimizer","Lifestyle|Performance":"The Athlete","Performance|Style":"Fast & Fresh","Data|Lifestyle":"The Quantified Runner","Data|Style":"The Tech Runner","Lifestyle|Style":"The Run Culture Creator"
+};
+let i=0, answers=Array(questions.length).fill(null);
+
+function resumeSurvey(){let x=JSON.parse(localStorage.getItem("runnerDNA_v05")||"null");if(x){i=x.i||0;answers=x.answers||answers;usedQ=x.usedQ||[]}document.getElementById("landing").classList.add("hidden");document.getElementById("survey").classList.remove("hidden");render()}
+function startSurvey(){localStorage.removeItem("runnerDNA_v05");i=0;answers.fill(null);usedQ=[];document.getElementById("landing").classList.add("hidden");document.getElementById("survey").classList.remove("hidden");render()}
+function render(){
+ document.getElementById("counter").textContent=`Part ${Math.floor(i/7)+1} · ${i+1} / ${questions.length}`;
+ document.getElementById("bar").style.width=`${(i/questions.length)*100}%`;
+ document.getElementById("question").textContent=questions[i][1];
+ const s=document.getElementById("scale"); s.innerHTML="";
+ for(let n=1;n<=5;n++){const b=document.createElement("button");b.className="score"+(answers[i]===n?" active":"");b.textContent=n;b.onclick=()=>{answers[i]=n;localStorage.setItem("runnerDNA_v05",JSON.stringify({i,answers,usedQ}));render();};s.appendChild(b)}
+ document.getElementById("nextBtn").textContent=i===questions.length-1?"ดู Runner DNA ของฉัน 🧬":"ถัดไป →";
+}
+const breakQuotes=["วิ่งให้เร็วแค่ไหนก็ไม่ทันใจเธอ","มีแรงก็วิ่งไป มีใจก็ทักมา","วิ่งเหนื่อยก็พัก แต่ถ้าเค้าไม่รัก ให้มาหาเรา","วิ่งคนเดียวก็กลัวจะหลงทาง อยากไปวิ่งข้าง ๆ ก็กลัวจะหลงเธอ","วิ่ง 100 โล ก็ไม่เหนื่อยเท่า วิ่งตามคนที่เค้าไม่มีใจ","ถ้าวิ่งคนเดียวมันเหงา มาวิ่งกับเราก็ได้นะ","ถ้ารักเค้าแล้วปวดใจ มาวิ่งกับเราไหม ปวดทั้งตัว","ถ้าไม่ชอบ Fun Run จะลองมารักกันก็ได้นะ","มาวิ่งด้วยกันมั้ย มาวิ่งให้หัวใจเราเต้นพร้อมกัน","ชอบทางเขาก็วิ่งไป ถ้าชอบทางเราเมื่อไหร่ก็วิ่งมา","ซ้อมวิ่งก็ต้องมี วันพัก แต่ถ้า ตกหลุมรัก หยุดพักไม่ได้นะยูว์","วิ่งเร็วระวังล้ม วิ่งกับผมระวังรักนะค้าบ"]; const breakAnimals=["🐆","🐢","🐈","🦎","🐕","🦥","🐺","🦩","🦉","🐎"]; let usedQ=[];
+function showBreak(part){document.getElementById("survey").classList.add("hidden");document.getElementById("breakScreen").classList.remove("hidden");let pool=breakQuotes.map((_,x)=>x).filter(x=>!usedQ.includes(x));let x=pool[Math.floor(Math.random()*pool.length)];usedQ.push(x);document.getElementById("breakQuote").textContent="“"+breakQuotes[x]+"”";document.getElementById("breakAnimal").textContent=breakAnimals[Math.floor(Math.random()*breakAnimals.length)];document.getElementById("breakPart").textContent=`PART ${part} COMPLETE · ${part*7}/28`;document.getElementById("breakMsg").textContent=part===1?"ผ่านช่วงแรกแล้ว! Runner DNA ของคุณกำลังเป็นรูปเป็นร่าง...":part===2?"50% แล้ว! Runner DNA เริ่มชัดขึ้นแล้ว 🧬":"เหลืออีกแค่ 7 ข้อ... Runner Animal ของคุณกำลังรออยู่ 🐾";localStorage.setItem("runnerDNA_v05",JSON.stringify({i,answers,usedQ}));}
+function continueSurvey(){document.getElementById("breakScreen").classList.add("hidden");document.getElementById("survey").classList.remove("hidden");render()}
+function next(){if(answers[i]==null){alert("เลือกคำตอบ 1–5 ก่อนนะครับ");return} if(i<questions.length-1){i++;localStorage.setItem("runnerDNA_v05",JSON.stringify({i,answers,usedQ})); if(i%7===0)showBreak(i/7); else render()}else finish()}
+function prev(){if(i>0){i--;render()}}
+function finish(){
+ const sums={}, counts={}; Object.keys(meta).forEach(k=>{sums[k]=0;counts[k]=0});
+ questions.forEach((q,idx)=>{sums[q[0]]+=answers[idx];counts[q[0]]++});
+ const scores={}; Object.keys(meta).forEach(k=>scores[k]=Math.round(((sums[k]/counts[k])-1)/4*100));
+ const ranked=Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);
+ const a=ranked[0],b=ranked[1], key=[a,b].sort().join("|"), name=archetypes[key]||"The Hybrid Runner";
+ document.getElementById("survey").classList.add("hidden");document.getElementById("result").classList.remove("hidden");
+ document.getElementById("resultTitle").textContent=`${meta[a][0]} ${meta[a][2]} คือแรงขับหลักของคุณ`;
+ document.getElementById("arch").textContent=name;
+ document.getElementById("combo").textContent=`${meta[a][1]} × ${meta[b][1]}`;
+ document.getElementById("desc").textContent=`Runner DNA ของคุณเด่นที่ “${meta[a][2]}” และ “${meta[b][2]}” — สองแรงขับนี้ช่วยอธิบายว่าสิ่งไหนทำให้คุณอยากออกไปวิ่งและสนุกกับการวิ่งในแบบของตัวเอง`;
+ const box=document.getElementById("scores");box.innerHTML="";
+ ranked.forEach(k=>{box.innerHTML+=`<div class="pill"><b>${meta[k][0]} ${meta[k][2]}</b><b>${scores[k]}</b></div>`});
+ drawRadar(scores); localStorage.removeItem("runnerDNA_v05"); window.scrollTo({top:0,behavior:"smooth"});
+}
+function drawRadar(scores){
+ const c=document.getElementById("radar"),ctx=c.getContext("2d"),cx=300,cy=300,R=205, keys=Object.keys(meta),N=keys.length;
+ ctx.clearRect(0,0,c.width,c.height);ctx.lineWidth=1;ctx.strokeStyle="#d1d5db";
+ for(let ring=1;ring<=5;ring++){ctx.beginPath();keys.forEach((k,j)=>{let a=-Math.PI/2+j*2*Math.PI/N,r=R*ring/5,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();ctx.stroke()}
+ keys.forEach((k,j)=>{let a=-Math.PI/2+j*2*Math.PI/N;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);ctx.stroke()});
+ ctx.beginPath();keys.forEach((k,j)=>{let a=-Math.PI/2+j*2*Math.PI/N,r=R*scores[k]/100,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;j?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.closePath();ctx.fillStyle="rgba(17,24,39,.16)";ctx.fill();ctx.strokeStyle="#111827";ctx.lineWidth=3;ctx.stroke();
+ ctx.fillStyle="#111827";ctx.textAlign="center";ctx.font="bold 16px system-ui";
+ keys.forEach((k,j)=>{let a=-Math.PI/2+j*2*Math.PI/N,r=R+45,x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;ctx.fillText(`${meta[k][0]} ${meta[k][2]}`,x,y);});
+}
+function restart(){localStorage.removeItem("runnerDNA_v05");usedQ=[];i=0;answers.fill(null);document.getElementById("result").classList.add("hidden");document.getElementById("landing").classList.remove("hidden");window.scrollTo(0,0)}
+let saved=localStorage.getItem("runnerDNA_v05");if(saved){document.getElementById("resumeBtn").classList.remove("hidden");}
+</script>
+</body>
+</html>
